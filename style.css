@@ -1,0 +1,95 @@
+/* --- Universal Box Sizing --- */
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* --- General Setup --- */
+body {
+  background-image: url(https://drive.google.com/file/d/1vZ7isRNEP3YuNk5Na873bVJFy0PXXnrW/view?usp=sharing); /* Dark, luxurious black */
+  color: #f0f0f0; /* Off-white for readability */
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+/* --- Header --- */
+header h1 {
+  font-family: 'Playfair Display', serif;
+  color: #FFD700; /* Gold */
+  font-size: 2.8em;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* --- Chart Container --- */
+.chart-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 40px auto;
+}
+
+/* --- Leaderboard --- */
+#leaderboard-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.leaderboard {
+  background: rgba(20, 20, 20, 0.7); /* Dark, semi-transparent card */
+  border: 1px solid #FFD700;
+  border-radius: 15px; /* Rounded corners */
+  padding: 20px;
+  width: 45%;
+  min-width: 300px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 215, 0, 0.8) inset;
+  backdrop-filter: blur(5px);
+}
+
+.leaderboard h3 {
+  font-family: 'Playfair Display', serif;
+  color: #FFD700;
+  font-size: 1.8em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.leaderboard th, .leaderboard td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.leaderboard th {
+  color: #FFD700;
+  font-weight: bold;
+}
+
+.leaderboard tr:last-child td {
+  border-bottom: none;
+}
+
+.leaderboard td:first-child { /* Rank number */
+  font-weight: bold;
+  color: #FFD700;
+}
+
+/* --- Footer --- */
+footer {
+  margin-top: 40px;
+  font-size: 0.9em;
+  color: #aaa;
+}
