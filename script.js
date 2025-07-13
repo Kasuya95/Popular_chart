@@ -31,26 +31,20 @@ function processSheetData(csvText) {
   return processedData.sort((a, b) => b.score - a.score).slice(0, 4);
 }
 
-// --- Helper function to create a tooltip callback ---
-const createTooltipCallback = (men, women) => {
-  return function(context) {
-    const datasetLabel = context.dataset.label || '';
-    const score = context.parsed.y;
-    const player = datasetLabel.includes('MSCI') ? men[context.dataIndex] : women[context.dataIndex];
-    return `${player?.name || ''}: ${score}`;
-  };
+// --- Helper functions for Chart.js callbacks ---
+const createTooltipCallback = (men, women) => (context) => {
+  const datasetLabel = context.dataset.label || '';
+  const score = context.parsed.y;
+  const player = datasetLabel.includes('MSCI') ? men[context.dataIndex] : women[context.dataIndex];
+  return `${player?.name || ''}: ${score}`;
 };
 
-// --- Helper function to create a datalabel formatter ---
-const createDatalabelFormatter = (men, women) => {
-  return (value, context) => {
-    if (value <= 0) return ''; // Don't show label for 0 score
-    const datasetLabel = context.dataset.label || '';
-    const player = datasetLabel.includes('MSCI') ? men[context.dataIndex] : women[context.dataIndex];
-    return player?.name || ''; // Return the name
-  };
+const createDatalabelFormatter = (men, women) => (value, context) => {
+  if (value <= 0) return '';
+  const datasetLabel = context.dataset.label || '';
+  const player = datasetLabel.includes('MSCI') ? men[context.dataIndex] : women[context.dataIndex];
+  return player?.name || '';
 };
-
 
 // --- Main function to fetch and update all data ---
 async function fetchAndUpdateAll() {
@@ -64,13 +58,14 @@ async function fetchAndUpdateAll() {
     const top4Men = processSheetData(msciCsvText);
     const top4Women = processSheetData(ssciCsvText);
 
-    // --- Update Leaderboard ---
     leaderboardContainer.innerHTML = generateLeaderboardTable('MSCI', top4Men) + generateLeaderboardTable('SSCI', top4Women);
 
-    // --- Update Chart ---
     const labels = ['อันดับ 1', 'อันดับ 2', 'อันดับ 3', 'อันดับ 4'];
     const menScores = top4Men.map(p => p.score);
     const womenScores = top4Women.map(p => p.score);
+
+    const maxScore = Math.max(...menScores, ...womenScores);
+    const chartCeiling = maxScore > 0 ? maxScore + 20 : 100;
 
     if (!chart) {
       const ctx = document.getElementById('myChart').getContext('2d');
@@ -82,18 +77,14 @@ async function fetchAndUpdateAll() {
             {
               label: 'MSCI',
               data: menScores,
-              backgroundColor: 'rgba(255, 99, 132, 0.8)', // Red
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1,
+              backgroundColor: 'rgba(255, 99, 132, 0.8)',
               borderRadius: 10,
               borderSkipped: false,
             },
             {
               label: 'SSCI',
               data: womenScores,
-              backgroundColor: 'rgba(255, 182, 193, 0.8)', // Pink
-              borderColor: 'rgba(255, 182, 193, 1)',
-              borderWidth: 1,
+              backgroundColor: 'rgba(255, 182, 193, 0.8)',
               borderRadius: 10,
               borderSkipped: false,
             }
@@ -102,14 +93,21 @@ async function fetchAndUpdateAll() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // Add Bar Animation
+          animation: {
+            duration: 1000,
+            easing: 'easeOutCubic',
+          },
           scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#f0f0f0' } },
-            x: { 
-              grid: { display: false }, 
-              ticks: { 
-                color: '#f0f0f0',
-                padding: 20 // Add padding to move labels down
-              } 
+            y: {
+              beginAtZero: true,
+              grid: { display: false },
+              ticks: { display: false },
+              suggestedMax: chartCeiling,
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#f0f0f0', padding: 20 }
             }
           },
           plugins: {
@@ -120,11 +118,7 @@ async function fetchAndUpdateAll() {
               align: 'start',
               offset: 8,
               color: '#ffffff',
-              font: {
-                weight: 'bold',
-                size: 11,
-                family: 'Montserrat'
-              },
+              font: { weight: 'bold', size: 11, family: 'Montserrat' },
               formatter: createDatalabelFormatter(top4Men, top4Women)
             }
           }
@@ -134,12 +128,13 @@ async function fetchAndUpdateAll() {
       chart.data.labels = labels;
       chart.data.datasets[0].data = menScores;
       chart.data.datasets[1].data = womenScores;
+      chart.options.scales.y.suggestedMax = chartCeiling;
       chart.options.plugins.tooltip.callbacks.label = createTooltipCallback(top4Men, top4Women);
       chart.options.plugins.datalabels.formatter = createDatalabelFormatter(top4Men, top4Women);
       chart.update();
     }
 
-    //lastUpdatedEl.textContent = 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
+    lastUpdatedEl.textContent = 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
 
   } catch (error) {
     console.error('Error fetching or processing data:', error);

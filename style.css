@@ -6,30 +6,67 @@ html {
   box-sizing: inherit;
 }
 
+/* --- Keyframes for Animations --- */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 215, 0, 0.8) inset;
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 1) inset;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+
 /* --- General Setup --- */
 body {
-  background-image: url(https://drive.google.com/file/d/1vZ7isRNEP3YuNk5Na873bVJFy0PXXnrW/view?usp=sharing); /* Dark, luxurious black */
-  color: #f0f0f0; /* Off-white for readability */
+  background-image: 
+    linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)),
+    url('https://raw.githubusercontent.com/Kasuya95/Popular_chart/refs/heads/main/image/144049.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  
+  color: #f0f0f0;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   margin: 0;
   padding: 20px;
+  min-height: 100vh;
 }
 
 /* --- Header --- */
 header h1 {
   font-family: 'Playfair Display', serif;
-  color: #FFD700; /* Gold */
+  color: #FFD700;
   font-size: 2.8em;
   margin-bottom: 20px;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  
+  /* Shimmer Effect */
+  position: relative;
+  background: linear-gradient(to right, #FFD700 20%, #FFFDE4 40%, #FFD700 60%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 5s linear infinite;
 }
 
 /* --- Chart Container --- */
 .chart-container {
   width: 100%;
   max-width: 900px;
+  height: 40vh; /* Increased height (50% of viewport height) */
   margin: 0 auto 40px auto;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  padding: 20px; /* Increased padding */
+  backdrop-filter: blur(2px);
 }
 
 /* --- Leaderboard --- */
@@ -44,14 +81,14 @@ header h1 {
 }
 
 .leaderboard {
-  background: rgba(20, 20, 20, 0.7); /* Dark, semi-transparent card */
+  background: rgba(20, 20, 20, 0.7);
   border: 1px solid #FFD700;
-  border-radius: 15px; /* Rounded corners */
+  border-radius: 15px;
   padding: 20px;
   width: 45%;
   min-width: 300px;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px rgba(255, 215, 0, 0.8) inset;
   backdrop-filter: blur(5px);
+  animation: pulseGlow 4s infinite ease-in-out; /* Pulsing glow animation */
 }
 
 .leaderboard h3 {
@@ -82,7 +119,7 @@ header h1 {
   border-bottom: none;
 }
 
-.leaderboard td:first-child { /* Rank number */
+.leaderboard td:first-child {
   font-weight: bold;
   color: #FFD700;
 }
