@@ -73,14 +73,14 @@ function processSheetData(csvText) {
 const createTooltipCallback = (men, women) => (context) => {
   const datasetLabel = context.dataset.label || '';
   const score = context.parsed.y;
-  const player = datasetLabel.includes('MSCI') ? men[context.dataIndex] : women[context.dataIndex];
+  const player = datasetLabel.includes('M') ? men[context.dataIndex] : women[context.dataIndex];
   return `${player?.name || ''}: ${score}`;
 };
 
 const createDatalabelFormatter = (men, women) => (value, context) => {
   if (value <= 0) return '';
   const datasetLabel = context.dataset.label || '';
-  const player = datasetLabel.includes('MSCI') ? men[context.dataIndex] : women[context.dataIndex];
+  const player = datasetLabel.includes('M') ? men[context.dataIndex] : women[context.dataIndex];
   return player?.name || '';
 };
 
