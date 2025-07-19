@@ -9,6 +9,44 @@ const leaderboardContainer = document.getElementById('leaderboard-container');
 // --- Register Chart.js Plugins ---
 Chart.register(ChartDataLabels);
 
+// --- Animation State ---
+let gradientOffset = 0;
+
+// --- Function to create animated gradient ---
+function createAnimatedGradient(ctx, chartArea, baseColor, highlightColor, offset) {
+    if (!chartArea) {
+        return baseColor; // Return base color if chart area is not ready
+    }
+    const { top, bottom } = chartArea;
+    const gradient = ctx.createLinearGradient(0, bottom, 0, top);
+
+    // Animate the highlight position, cycling from -0.5 to 1.5
+    const position = (offset % 2) - 0.5;
+    const waveWidth = 0.6;
+
+    const startPos = position - waveWidth / 2;
+    const endPos = position + waveWidth / 2;
+
+    // Add color stops, clamping the values between 0 and 1 to avoid errors
+    gradient.addColorStop(0, baseColor);
+    gradient.addColorStop(Math.max(0, Math.min(1, startPos)), baseColor);
+    gradient.addColorStop(Math.max(0, Math.min(1, position)), highlightColor);
+    gradient.addColorStop(Math.max(0, Math.min(1, endPos)), baseColor);
+    gradient.addColorStop(1, baseColor);
+
+    return gradient;
+}
+
+
+// --- Animation Loop ---
+function animateChart() {
+    gradientOffset += 0.008;
+    if (chart) {
+        chart.update('none'); // Redraw chart without new animation
+    }
+    requestAnimationFrame(animateChart);
+}
+
 // --- Function to generate a leaderboard table ---
 function generateLeaderboardTable(title, data) {
   let tableHTML = `<div class="leaderboard"><h3>${title}</h3><table><thead><tr><th>อันดับ</th><th>ชื่อ</th><th>คะแนน</th></tr></thead><tbody>`;
@@ -60,7 +98,7 @@ async function fetchAndUpdateAll() {
 
     leaderboardContainer.innerHTML = generateLeaderboardTable('MSCI', top4Men) + generateLeaderboardTable('SSCI', top4Women);
 
-    const labels = ['อันดับ 1', 'อันดับ 2', 'อันดับ 3', 'อันดับ 4'];
+    const labels = ['Top 1', 'Top 2', 'Top 3', 'Top 4'];
     const menScores = top4Men.map(p => p.score);
     const womenScores = top4Women.map(p => p.score);
 
@@ -77,14 +115,28 @@ async function fetchAndUpdateAll() {
             {
               label: 'MSCI',
               data: menScores,
-              backgroundColor: 'rgba(255, 99, 132, 0.8)',
+              backgroundColor: (context) => createAnimatedGradient(
+                  context.chart.ctx,
+                  context.chart.chartArea,
+                  'rgba(0, 144, 253, 0.8)',   // Bright Blue for Male
+                  'rgba(102, 179, 255, 1)',    // Lighter Bright Blue
+                  gradientOffset
+              ),
+              barPercentage: 0.8,
               borderRadius: 10,
               borderSkipped: false,
             },
             {
               label: 'SSCI',
               data: womenScores,
-              backgroundColor: 'rgba(255, 182, 193, 0.8)',
+              backgroundColor: (context) => createAnimatedGradient(
+                  context.chart.ctx,
+                  context.chart.chartArea,
+                  'rgba(255, 20, 147, 0.8)',  // Bright Pink for Female
+                  'rgba(255, 105, 180, 1)',   // Lighter Pink
+                  gradientOffset + 0.4 // Offset the animation for the second bar
+              ),
+              barPercentage: 0.8,
               borderRadius: 10,
               borderSkipped: false,
             }
@@ -93,7 +145,6 @@ async function fetchAndUpdateAll() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          // Add Bar Animation
           animation: {
             duration: 1000,
             easing: 'easeOutCubic',
@@ -107,7 +158,18 @@ async function fetchAndUpdateAll() {
             },
             x: {
               grid: { display: false },
-              ticks: { color: '#f0f0f0', padding: 20 }
+              ticks: {
+                color: (context) => {
+                  // Create a pulsing effect for the labels
+                  const alpha = 0.7 + (Math.sin(gradientOffset * 5) + 1) / 2 * 0.3; // Varies between 0.7 and 1.0
+                  return `rgba(255, 215, 0, ${alpha})`; // Pulsing gold color
+                },
+                padding: 20,
+                font: {
+                  weight: 'bold',
+                  size: 16
+                }
+              }
             }
           },
           plugins: {
@@ -124,6 +186,7 @@ async function fetchAndUpdateAll() {
           }
         }
       });
+      animateChart(); // Start the animation loop
     } else {
       chart.data.labels = labels;
       chart.data.datasets[0].data = menScores;
@@ -131,10 +194,10 @@ async function fetchAndUpdateAll() {
       chart.options.scales.y.suggestedMax = chartCeiling;
       chart.options.plugins.tooltip.callbacks.label = createTooltipCallback(top4Men, top4Women);
       chart.options.plugins.datalabels.formatter = createDatalabelFormatter(top4Men, top4Women);
-      chart.update();
+      // No need to call chart.update() here, the animation loop handles it
     }
 
-    lastUpdatedEl.textContent = 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
+   //lastUpdatedEl.textContent = 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
 
   } catch (error) {
     console.error('Error fetching or processing data:', error);
