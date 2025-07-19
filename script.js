@@ -96,7 +96,7 @@ async function fetchAndUpdateAll() {
     const top4Men = processSheetData(msciCsvText);
     const top4Women = processSheetData(ssciCsvText);
 
-    leaderboardContainer.innerHTML = generateLeaderboardTable('MSCI', top4Men) + generateLeaderboardTable('SSCI', top4Women);
+    leaderboardContainer.innerHTML = generateLeaderboardTable('MOON', top4Men) + generateLeaderboardTable('STAR', top4Women);
 
     const labels = ['Top 1', 'Top 2', 'Top 3', 'Top 4'];
     const menScores = top4Men.map(p => p.score);
@@ -113,7 +113,7 @@ async function fetchAndUpdateAll() {
           labels: labels,
           datasets: [
             {
-              label: 'MSCI',
+              label: 'M',
               data: menScores,
               backgroundColor: (context) => createAnimatedGradient(
                   context.chart.ctx,
@@ -127,7 +127,7 @@ async function fetchAndUpdateAll() {
               borderSkipped: false,
             },
             {
-              label: 'SSCI',
+              label: 'S',
               data: womenScores,
               backgroundColor: (context) => createAnimatedGradient(
                   context.chart.ctx,
