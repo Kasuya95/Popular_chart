@@ -1,6 +1,6 @@
 // URLs for fetching data from MSCI and SSCI sheets
-const msciUrl = 'https://docs.google.com/spreadsheets/d/1B34MYj61oXb4hZ0WmkMG8LoUxOz2igB20eVMEGmLk8I/gviz/tq?tqx=out:csv&sheet=MSCI&range=A2:I50';
-const ssciUrl = 'https://docs.google.com/spreadsheets/d/1B34MYj61oXb4hZ0WmkMG8LoUxOz2igB20eVMEGmLk8I/gviz/tq?tqx=out:csv&sheet=SSCI&range=A2:I50';
+const msciUrl = 'https://docs.google.com/spreadsheets/d/1B34MYj61oXb4hZ0WmkMG8LoUxOz2igB20eVMEGmLk8I/gviz/tq?tqx=out:csv&sheet=MSCI&range=A2:Z50';
+const ssciUrl = 'https://docs.google.com/spreadsheets/d/1B34MYj61oXb4hZ0WmkMG8LoUxOz2igB20eVMEGmLk8I/gviz/tq?tqx=out:csv&sheet=SSCI&range=A2:Z50';
 
 let chart;
 const lastUpdatedEl = document.getElementById('lastUpdated');
@@ -62,11 +62,29 @@ function processSheetData(csvText) {
   if (typeof csvText !== 'string' || !csvText.trim()) return [];
   const cleanCsv = csvText.replace(/"/g, '');
   const rows = cleanCsv.trim().split('\n');
+  
+  console.log("--- Debug: Processing CSV Text ---");
+  console.log(csvText);
+
   const processedData = rows.map(row => {
     const columns = row.split(',');
-    return { name: columns[0], score: parseFloat(columns[8]) || 0 };
-  }).filter(item => item.name);
-  return processedData.sort((a, b) => b.score - a.score).slice(0, 4);
+    
+    // Basic check to ensure the row has enough columns
+    if (columns.length > 25) {
+      const name = columns[0];
+      const score = parseFloat(columns[25]) || 0;
+      console.log(`Parsed row: Name='${name}', Score='${score}' from column Z`);
+      return { name: name, score: score };
+    } else {
+      console.warn("Skipping row with not enough columns:", row);
+      return null; // Return null for rows that are not valid
+    }
+  }).filter(item => item && item.name); // Filter out nulls and items without a name
+
+  const sortedData = processedData.sort((a, b) => b.score - a.score);
+  console.log("Final Processed Data (Top 4):", sortedData.slice(0, 4));
+  
+  return sortedData.slice(0, 4);
 }
 
 // --- Helper functions for Chart.js callbacks ---

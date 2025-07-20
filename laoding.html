@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: 
+                linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)),
+                url('https://raw.githubusercontent.com/Kasuya95/Popular_chart/refs/heads/main/image/144049.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            font-family: 'Kanit', sans-serif;
+            color: #f0f0f0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .loader span {
+            display: inline-block;
+            width: 30px;  /* Increased size */
+            height: 30px; /* Increased size */
+            margin: 0 12px; /* Increased margin */
+            background-color: #FFD700;
+            border-radius: 50%;
+            animation: pulse-dot 1.4s infinite ease-in-out both;
+        }
+
+        .loader span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loader span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes pulse-dot {
+          0%, 80%, 100% {
+            transform: scale(0);
+            opacity: 0;
+            box-shadow: none;
+          } 40% {
+            transform: scale(1.0);
+            opacity: 1;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); /* Added glow effect */
+          }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <h1>ใครคือขวัญใจเด็กวิทย์น้าา . . . </h1>
+</body>
+</html>
